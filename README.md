@@ -35,6 +35,7 @@ Exemplos de features disponíveis:
 |reserved_room_type             |character | Code of room type reserved. Code is presented instead of designation for anonymity reasons |
 |adr                            |double    | Average Daily Rate as defined by dividing the sum of all lodging transactions by the total number of staying nights |
 |total_of_special_requests      |double    | Number of special requests made by the customer (e.g. twin bed or high floor)|
+
 fonte: adaptado do [repo](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11).
 
 A variável in_canceled informa se a reserva foi cancelada (in_canceled = 1) ou não (in_canceled = 0). Essa é a variável dependente, aquela que queremos que nosso modelo preveja.
@@ -48,17 +49,14 @@ Após carregar os dados, precisei fazer uma série de transformações para que 
 * Transformei o Data type de features categóricas de string para número inteiro.
 
 ## Análise Exploratória de Dados e Feature Engineering
-Analisei as distribuições dos dados e suas relações com a variável dependente. Concluí que as features mais relevantes para a regressão da nota do ENEM seriam renda, escolaridade dos pais, sexo e raça do candidato (além das engineered features). Segue abaixo um exemplo de gráfico construído.
-<img src='imgs/renda.png' width=900>
-
-
 * Após o tratamento de missing data, ficamos com 78879 data points.
 * A proporção de cancelamentos era maior em reservas feitas por clientes de Portugal.
 * A proporção de cancelamentos era menor em reservas feitas por clientes da União Europeia que não de Portugal.
-* As duas informações acima me levaram a fazer 2 Feature Engineering: **IsPRT**: a reserva foi feita por um cliente de Portugal? **isEU**: a reserva foi feita por um cliente da união Europeia?
+* As duas informações acima me levaram a fazer 2 Feature Engineering: **isPRT**: a reserva foi feita por um cliente de Portugal? **isEU**: a reserva foi feita por um cliente da união Europeia?
 * 40% das reservas possuíam algum tipo de pedido especial, e tinham uma taxa de cancelamento 2.5x menor que reservas sem nenhum pedido especial.
 * Reservas que possuíam apenas dias de final de semana tinham uma taxa de cancelamento menor
 * A informação acima me levou a criar a seguinte feature: **isOnlyWeekend**: a reserva possui apenas dias de final de semana?
+
 Muitas outras features pareceram ser relevantes para a previsão da probabilidade de cancelamento. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
 
 
