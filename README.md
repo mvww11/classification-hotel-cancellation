@@ -1,5 +1,5 @@
 # Classificação: uma reserva de hotel será cancelada?
-Esse é um projeto completo de data science: da obtenção dos dados até o deploy do modelo.
+Esse é um projeto completo de data science: obtenção dos dados, tratamento de missing data, análise exploratória de dados, modelagem, otimização dos hiperparâmetros, explicabilidade e deploy do modelo no Google Cloud Platform.
 
 Nessa página você encontra um resumo do projeto. A versão completa está separada nos arquivos [missing_data.ipynb](missing_data.ipynb), [EDA.ipynb](EDA.ipynb), [modeling.ipynb](modeling.ipynb), [explainability.ipynb](explainability.ipynb).
 
@@ -21,16 +21,20 @@ Nessa página você encontra um resumo do projeto. A versão completa está sepa
 **Explicando o modelo com SHAP**: [[1]](https://medium.com/@gabrieltseng/interpreting-complex-models-with-shap-values-1c187db6ec83) [[2]](https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30) [[3]](https://towardsdatascience.com/black-box-models-are-actually-more-explainable-than-a-logistic-regression-f263c22795d) [[4]](https://towardsdatascience.com/explain-your-model-with-the-shap-values-bc36aac4de3d)
 
 ## Obtenção dos dados
-Buscamos no portal do [INEP](http://inep.gov.br/microdados) dados referentes ao ENEM 2019. Estavam disponíveis informações socioeconômicas sobre cerca de 5 milhões de candidatos, bem como as notas por eles obtidas.
+Os dados foram disponibilizados no artigo [Hotel booking demand datasets](https://www.sciencedirect.com/science/article/pii/S2352340918315191). São cerca de 80 mil reservas feitas num hotel situado na cidade de Lisboa, Portugal, entre os anos de 2015 e 2017.
 
 Exemplos de features disponíveis:
-| Feature | Tipo | Pergunta feita no questionário socioeconômico |
-| --- | --- | --- |
-| Q001 | categórica ordenada | Até que série seu pai, ou o homem responsável por você, estudou? |
-| Q005 | numérica discreta | Incluindo você, quantas pessoas moram atualmente em sua residência? |
-| Q006 | categórica ordenada | Qual é a renda mensal de sua família? (Some a sua renda com a dos seus familiares.) |
-| TP_SEXO | categórica nominal | Qual é seu sexo? |
-| TP_COR_RACA | categórica nominal | Qual é sua raça? |
+|variable                       |class     |description |
+|:------------------------------|:---------|:-----------|
+|is_canceled                    |double    | Value indicating if the booking was canceled (1) or not (0) |
+|lead_time                      |double    | Number of days that elapsed between the entering date of the booking into the PMS and the arrival date |
+|adults                         |double    | Number of adults|
+|children                       |double    | Number of children|
+|country                        |character | Country of origin. Categories are represented in the ISO 3155–3:2013 format |
+|is_repeated_guest              |double    | Value indicating if the booking name was from a repeated guest (1) or not (0) |
+|reserved_room_type             |character | Code of room type reserved. Code is presented instead of designation for anonymity reasons |
+|adr                            |double    | Average Daily Rate as defined by dividing the sum of all lodging transactions by the total number of staying nights |
+|total_of_special_requests      |double    | Number of special requests made by the customer (e.g. twin bed or high floor)|
 
 ## Data Cleaning, wrangling e feature engineering
 Após carregar os dados, precisei fazer uma série de transformações para que ficassem apropriados para serem utilizados no treinamento dos modelos.
