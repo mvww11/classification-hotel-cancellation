@@ -53,7 +53,7 @@ Após carregar os dados, precisei fazer uma série de transformações para que 
 * Após o tratamento de missing data, ficamos com 78879 data points.
 * A proporção de cancelamentos era maior em reservas feitas por clientes de Portugal.
 * A proporção de cancelamentos era menor em reservas feitas por clientes da União Europeia que não de Portugal.
-* As duas informações acima me levaram a fazer 2 Feature Engineering: **isPRT**: a reserva foi feita por um cliente de Portugal? **isEU**: a reserva foi feita por um cliente da união Europeia?
+* As duas informações acima me levaram a fazer 2 Feature Engineering: **isPRT**: a reserva foi feita por um cliente de Portugal? **isEU**: a reserva foi feita por um cliente da união Europeia? Confira o gráfico abaixo.
 * 40% das reservas possuíam algum tipo de pedido especial, e tinham uma taxa de cancelamento 2.5x menor que reservas sem nenhum pedido especial.
 * Reservas que possuíam apenas dias de final de semana tinham uma taxa de cancelamento menor
 * A informação acima me levou a criar a seguinte feature: **isOnlyWeekend**: a reserva possui apenas dias de final de semana?
