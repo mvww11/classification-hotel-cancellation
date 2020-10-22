@@ -60,8 +60,9 @@ Após carregar os dados, precisei fazer uma série de transformações para que 
 
 Muitas outras features pareceram ser relevantes para a previsão da probabilidade de cancelamento. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
 
+## Data Leakage
 
-## Benchmark e feature selection
+## Benchmark e Refinamento do modelo
 Treinei dois modelos com hiperparâmetros default: um xgboost e um lightgbm, que apresentaram RMSE similares (~93 no conjunto de validação). A partir desses dois modelos, analisei as feature importances e discuti inconsistências existentes quando mudamos o critério para determinação das feature importances. A solução foi usar a média dos módulos dos valores SHAP para definir que features eram mais importantes. A partir desse resultado, realizei a feature selection. O model final acabou ficando com apenas 5 features.
 
 ## Refinamento do modelo
