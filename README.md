@@ -60,7 +60,7 @@ Após carregar os dados, precisei fazer uma série de transformações para que 
 
 Muitas outras features pareceram ser relevantes para a previsão da probabilidade de cancelamento. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
 
-<img src='isPRT_cancel.png'>
+<img src='isPRT_cancel.png' width="200">
 
 ## Data Leakage
 
