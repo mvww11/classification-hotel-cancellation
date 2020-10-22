@@ -5,7 +5,7 @@ Nessa página você encontra um resumo do projeto. A versão completa está sepa
 
 ## Resumo do Projeto
 * Objetivo: criar um modelo de previsão da probabilidade de uma reserva de hotel ser cancelada.
-* Nosso modelo xgboost final alcançou um recall de 92% em data points nunca vistos por ele.
+** Nosso modelo xgboost final alcançou um recall de 92% em data points nunca vistos por ele.
 * Dados: 80 mil reservas de um hotel situado em Lisboa, Portugal.
 * Análise exploratória de dados mostrou que a renda é o fator mais relevante para a previsão da nota.
 * Feature engineering: criei duas features novas: uma que indica a renda per capita (por residente no domicílio) do candidato e outra que indica a escolaridade máxima entre pai e mãe.
