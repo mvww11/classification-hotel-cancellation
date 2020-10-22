@@ -21,7 +21,7 @@ Nessa página você encontra um resumo do projeto. A versão completa está sepa
 **Explicando o modelo com SHAP**: [[1]](https://medium.com/@gabrieltseng/interpreting-complex-models-with-shap-values-1c187db6ec83) [[2]](https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30) [[3]](https://towardsdatascience.com/black-box-models-are-actually-more-explainable-than-a-logistic-regression-f263c22795d) [[4]](https://towardsdatascience.com/explain-your-model-with-the-shap-values-bc36aac4de3d)
 
 ## Obtenção dos dados
-Os dados foram disponibilizados no artigo [Hotel booking demand datasets](https://www.sciencedirect.com/science/article/pii/S2352340918315191). São cerca de 80 mil reservas feitas num hotel situado na cidade de Lisboa, Portugal, entre os anos de 2015 e 2017.
+Os dados foram disponibilizados no artigo [Hotel booking demand datasets](https://www.sciencedirect.com/science/article/pii/S2352340918315191) e coletados [aqui](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11). São cerca de 80 mil reservas feitas num hotel situado na cidade de Lisboa, Portugal, entre os anos de 2015 e 2017.
 
 Exemplos de features disponíveis:
 |variable                       |class     |description |
@@ -35,12 +35,15 @@ Exemplos de features disponíveis:
 |reserved_room_type             |character | Code of room type reserved. Code is presented instead of designation for anonymity reasons |
 |adr                            |double    | Average Daily Rate as defined by dividing the sum of all lodging transactions by the total number of staying nights |
 |total_of_special_requests      |double    | Number of special requests made by the customer (e.g. twin bed or high floor)|
+fonte: adaptado do [repo](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11).
 
-## Data Cleaning, wrangling e feature engineering
-Após carregar os dados, precisei fazer uma série de transformações para que ficassem apropriados para serem utilizados no treinamento dos modelos.
-* Data type de features categóricas foram transformados de string para int.
-* Candidatos sem nota na prova de Matemática foram removidos da análise (faltosos, etc).
-* Eliminamos features com alto percentual de missing data (acima de 70%, em alguns casos).
+## Data Cleaning (tratando missing data)
+Após carregar os dados, precisei fazer uma série de transformações para que ficassem apropriados para serem utilizados no treinamento dos modelos. Confira a etapa completa em [missing_data.ipynb](missing_data.ipynb).
+* Removi cerca de 30 data points continham campos nulos na coluna Country.
+* Removi a coluna Company, que possuía mais de 90% de missing data.
+* Removi 324 reservas que possuíam duração de hospedagem de 0 dias.
+* Removi 99 reservas que tinham 0 pessoas associadas (nenhum adulto, criança ou bebê).
+* Transformei o Data type de features categóricas de strings para números inteiros.
 * Feature engineering: criei duas features novas: uma que indica a renda per capita (por residente no domicílio) do candidato e outra que indica a escolaridade máxima entre pai e mãe.
 
 ## Análise exploratória de dados
