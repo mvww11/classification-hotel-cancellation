@@ -37,18 +37,30 @@ Exemplos de features disponíveis:
 |total_of_special_requests      |double    | Number of special requests made by the customer (e.g. twin bed or high floor)|
 fonte: adaptado do [repo](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11).
 
+A variável in_canceled informa se a reserva foi cancelada (in_canceled = 1) ou não (in_canceled = 0). Essa é a variável dependente, aquela que queremos que nosso modelo preveja.
+
 ## Data Cleaning (tratando missing data)
 Após carregar os dados, precisei fazer uma série de transformações para que ficassem apropriados para serem utilizados no treinamento dos modelos. Confira a etapa completa em [missing_data.ipynb](missing_data.ipynb).
 * Removi cerca de 30 data points continham campos nulos na coluna Country.
 * Removi a coluna Company, que possuía mais de 90% de missing data.
 * Removi 324 reservas que possuíam duração de hospedagem de 0 dias.
 * Removi 99 reservas que tinham 0 pessoas associadas (nenhum adulto, criança ou bebê).
-* Transformei o Data type de features categóricas de strings para números inteiros.
-* Feature engineering: criei duas features novas: uma que indica a renda per capita (por residente no domicílio) do candidato e outra que indica a escolaridade máxima entre pai e mãe.
+* Transformei o Data type de features categóricas de string para número inteiro.
 
-## Análise exploratória de dados
+## Análise Exploratória de Dados e Feature Engineering
 Analisei as distribuições dos dados e suas relações com a variável dependente. Concluí que as features mais relevantes para a regressão da nota do ENEM seriam renda, escolaridade dos pais, sexo e raça do candidato (além das engineered features). Segue abaixo um exemplo de gráfico construído.
 <img src='imgs/renda.png' width=900>
+
+
+* Após o tratamento de missing data, ficamos com 78879 data points.
+* A proporção de cancelamentos era maior em reservas feitas por clientes de Portugal.
+* A proporção de cancelamentos era menor em reservas feitas por clientes da União Europeia que não de Portugal.
+* As duas informações acima me levaram a fazer 2 Feature Engineering: **IsPRT**: a reserva foi feita por um cliente de Portugal? **isEU**: a reserva foi feita por um cliente da união Europeia?
+* 40% das reservas possuíam algum tipo de pedido especial, e tinham uma taxa de cancelamento 2.5x menor que reservas sem nenhum pedido especial.
+* Reservas que possuíam apenas dias de final de semana tinham uma taxa de cancelamento menor
+* A informação acima me levou a criar a seguinte feature: **isOnlyWeekend**: a reserva possui apenas dias de final de semana?
+Muitas outras features pareceram ser relevantes para a previsão da probabilidade de cancelamento. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
+
 
 ## Benchmark e feature selection
 Treinei dois modelos com hiperparâmetros default: um xgboost e um lightgbm, que apresentaram RMSE similares (~93 no conjunto de validação). A partir desses dois modelos, analisei as feature importances e discuti inconsistências existentes quando mudamos o critério para determinação das feature importances. A solução foi usar a média dos módulos dos valores SHAP para definir que features eram mais importantes. A partir desse resultado, realizei a feature selection. O model final acabou ficando com apenas 5 features.
