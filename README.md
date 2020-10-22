@@ -1,4 +1,4 @@
-# Previsão: qual é a probabilidade de uma reserva de hotel ser cancelada?
+# Classificação: uma reserva de hotel será cancelada?
 Esse é um projeto completo de data science: da obtenção dos dados até o deploy do modelo.
 
 Nessa página você encontra um resumo do projeto. A versão completa está separada nos arquivos [missing_data.ipynb](missing_data.ipynb), [EDA.ipynb](EDA.ipynb), [modeling.ipynb](modeling.ipynb), [explainability.ipynb](explainability.ipynb).
