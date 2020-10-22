@@ -57,11 +57,9 @@ Após carregar os dados, precisei fazer uma série de transformações para que 
 * 40% das reservas possuíam algum tipo de pedido especial, e tinham uma taxa de cancelamento 2.5x menor que reservas sem nenhum pedido especial.
 * Reservas que possuíam apenas dias de final de semana tinham uma taxa de cancelamento menor
 * A informação acima me levou a criar a seguinte feature: **isOnlyWeekend**: a reserva possui apenas dias de final de semana?
+<img src='isPRT_cancel.png' width="400">
 
 Muitas outras features pareceram ser relevantes para a previsão da probabilidade de cancelamento. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
-
-<img src='isPRT_cancel.png' width="600">
-
 ## Data Leakage
 
 ## Benchmark e Refinamento do modelo
