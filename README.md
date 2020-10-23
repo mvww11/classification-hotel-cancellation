@@ -54,7 +54,9 @@ Após carregar os dados, precisei fazer uma série de transformações para que 
 * Transformei o Data type de features categóricas de string para número inteiro.
 
 ## Análise Exploratória de Dados e Feature Engineering
-* Após o tratamento de missing data, ficamos com 78879 data points.
+Após o tratamento de missing data, ficamos com 78879 data points. Entre essas reservas, 41% foram canceladas. Isso indica que o cancelamento de reservas tem um impacto muito grande no business. Se conseguirmos diminuir esse percentual, o potencial de geração de lucro para o negócio é enorme.
+
+Abaixo estão ilustrados alguns insights observados na Análise Exploratória, e as Feature Engineering realizadas. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
 * A proporção de cancelamentos era maior em reservas feitas por clientes de Portugal.
 * A proporção de cancelamentos era menor em reservas feitas por clientes da União Europeia que não de Portugal.
 * As duas informações acima me levaram a fazer 2 Feature Engineering: **isPRT**: a reserva foi feita por um cliente de Portugal? **isEU**: a reserva foi feita por um cliente da união Europeia? Confira o gráfico abaixo.
@@ -63,7 +65,7 @@ Após carregar os dados, precisei fazer uma série de transformações para que 
 * A informação acima me levou a criar a seguinte feature: **isOnlyWeekend**: a reserva possui apenas dias de final de semana?
 <img src='isPRT_cancel.png' width="400">
 
-Muitas outras features pareceram ser relevantes para a previsão da probabilidade de cancelamento. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
+
 
 ## Data Leakage
 Algumas features de nosso data set foram eliminadas antes do treinamento do modelo, para evitar data leakage. Por exemplo, a coluna 'ReservationStatus' ( que possui 3 valores possíveis: 'cancelled', 'no-show', 'check-out') determina completamente se a reserva foi cancelada ou não. Entretanto, quando o modelo for colocado em produção, ele tentará prever se a reserva será cancelada ANTES de termos a informação sobre o 'ReservationStatus'. Por isso, nosso modelo não pode usar essa informação no treinamento. O mesmo vale para a coluna 'ReservationStatusDate' e para a coluna 'AssignedRoomType' (pois não sabemos que quarto será dado ao hóspede até que ele apareça para fazer o check-in). Logo, essas 3 colunas foram eliminadas da análise.
