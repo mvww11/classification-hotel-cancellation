@@ -68,24 +68,43 @@ Abaixo estão ilustrados alguns insights observados na Análise Exploratória, e
 
 
 ## Data Leakage
-Algumas features de nosso data set foram eliminadas antes do treinamento do modelo, para evitar data leakage. Por exemplo, a coluna 'ReservationStatus' ( que possui 3 valores possíveis: 'cancelled', 'no-show', 'check-out') determina completamente se a reserva foi cancelada ou não. Entretanto, quando o modelo for colocado em produção, ele tentará prever se a reserva será cancelada ANTES de termos a informação sobre o 'ReservationStatus'. Por isso, nosso modelo não pode usar essa informação no treinamento. O mesmo vale para a coluna 'ReservationStatusDate' e para a coluna 'AssignedRoomType' (pois não sabemos que quarto será dado ao hóspede até que ele apareça para fazer o check-in). Logo, essas 3 colunas foram eliminadas da análise.
+Algumas features de nosso data set foram eliminadas antes do treinamento do modelo, para evitar data leakage. Por exemplo, a coluna 'ReservationStatus' ( que possui 3 valores possíveis: 'cancelled', 'no-show', 'check-out') determina completamente se a reserva foi cancelada ou não. Entretanto, quando o modelo for colocado em produção, ele tentará prever se a reserva será cancelada ANTES de termos a informação sobre o 'ReservationStatus'. Por isso, nosso modelo não pode usar essa informação no treinamento. O mesmo vale para a coluna 'ReservationStatusDate' e para a coluna 'AssignedRoomType'. Logo, essas 3 colunas foram eliminadas da análise.
 
 ## Modelagem e split dos dados
-Usaremos um modelo de Gradient Boosting com a implementação da biblioteca xgboost. 
+Usaremos um modelo de Gradient Boosting com a implementação da biblioteca xgboost. O processo completo de modelagem pode ser visto no arquivo [modeling.ipynb](modeling.ipynb).
 
 Faremos um split de 60/20/20% dos dados em conjuntos de treinamento, validação e teste, respectivamente. O conjunto de treinamento será aquele em que ajustaremos os parâmetros treináveis de nosso modelo. Como treinaremos vários modelos, que diferem por seus hiperparâmetros, usaremos o conjunto de validação avaliar qual é o melhor entre eles. Já o conjunto de teste será usado uma única vez no final do projeto para estimar a performance que o modelo terá em produção. Desse modo, o conjunto de teste será composto de pontos nunca vistos pelo modelo durante seu treinamento e refinamento.
 
 A métrica que usaremos para avaliar qual é o melhor modelo será a área sob a curva ROC, conhecida como AUC (area under curve). Quanto maior o valor dessa métrica, melhor é o trade-off que teremos entre positivos verdadeiros e positivos falsos (i.e., entre o modelo acertar quais reservas serão canceladas e não errar as reservas não seriam canceladas).
 
-## Benchmark e Refinamento do modelo
-Um modelo inicial foi treinado com xgboost, usando os 
+## Benchmark
+Um modelo inicial foi treinado com xgboost, usando os hiperparâmetros default. Para não precisar tratar o número de árvores no modelo como um hiperparâmetro a ser otimizado, definimos que interromperíamos o treinamento quando nossa métrica de auc não apresentasse melhora por 30 árvores seguidas (early_stopping_rounds).
+
+Nosso modelo de benchmark alcançou um AUC de 0.946 e um Recall de 82.54%. Ou seja, o modelo previu corretamente 82.54% das reservas que seriam canceladas.
 
 ## Refinamento do modelo
-Decidi continuar a modelagem apenas com o lighgbm. Isso porque apresentou um benchmark muito parecido com o xgboost, é treinado mais rapidamente e evitaria [problemas](https://medium.com/@AlexeyButyrev/xgboost-on-aws-lambda-345f1394c2b) no deploy no AWS Lambda.
+O processo de refinamento consiste em treinar diferentes modelos, que diferem pelos seus hiperparâmetros, e utilizar nosso conjunto de validação para verificar qual dos modelos faz a melhor previsão. Compararemos a qualidade dos modelos pela métrica do AUC.
 
-Utilizei a técnica de busca bayesiana para procurar os hiperparâmetros ótimos, com a implementação do pacote [hyperopt](https://github.com/hyperopt/hyperopt).
+Para buscar os melhores hiperparâmetros, utilizaremos o [Bayesian optimization](https://towardsdatascience.com/automated-machine-learning-hyperparameter-tuning-in-python-dfda59b72f8a). Nesse método, sorteamos aleatoriamente valores para os hiperparâmetros de acordo com uma distribuição de probabilidade. O Bayesian optimization utiliza iterativamente os resultados que vão sendo obtidos para explorar mais intensamente os intervalos de valores mais promissores, para cada hiperparâmetro. Assim, a cada novo modelo treinado, é atualizada a distribuição de probabilidade dos valores associados a cada hiperparâmetro. A implementação do Bayesian optimization que utilizaremos aqui é a do pacote [hyperopt](https://github.com/hyperopt/hyperopt).
 
-Após 500 rounds de busca bayesiana, o modelo final mostrou RMSE de ~ 93 pontos no conjunto de teste (pontos nunca vistos antes pelo modelo, nem como validação).
+Como o pacote [hyperopt](https://github.com/hyperopt/hyperopt) precisa de uma função para MINIMIZAR, vamos definí-la como 1 - AUC. Assim, minimizando o AUC, estamos maximizando o AUC.
+
+Após treinarmos 320 modelos diferentes, o melhor entre eles apresentou um AUC de 0.952 e um Recall de 83.42%.
+
+O processo completo de refinamento também pode ser visto no arquivo [modeling.ipynb](modeling.ipynb).
+
+## Otimizando para o Recall
+Acredito que o recall tenha uma relevância grande para o projeto. Isso porque o recall mede o percentual de acertos do modelo nas reservas que são canceladas, de fato. E se o hotel sabe de antemão que uma reserva tem alta probabilidade de cancelamento, pode agir para evitar esse cancelamento (oferecendo algum benefício ao cliente, por exemplo). Isso tem um grande potencial de impacto no negócio, uma vez que, como vimos, 41% de todas as reservas são canceladas, em média.
+
+Até agora, para que nosso modelo previsse que uma reserva seria cancelada, era necessário que a probabilidade de cancelamento calculada por ele para essa reserva chegasse a 50%. Podemos otimizar o recall diminuindo esse threshold de probabilidade. Assim, por exemplo, uma reserva com 45% de probabilidade de cancelamento já seria prevista como cancelada por nosso modelo.
+
+Temos um trade-off, no entanto. Ao diminuir esse threshold, estaremos cometendo, com mais frequência, o erro de classificar como canceladas reservas que, de fato, não seriam canceladas. O impacto desse erro para o negócio é que o hotel oferecerá, com maior frequência, algum tipo de vantagem para clientes que não iriam cancelar suas reservas.
+
+Para avaliar o trade-off e escolhermos o melhor threshold, plotaremos abaixo o precision, recall e f1-score em função do threshold.
+
+<img src='threshold.png' width="400">
+
+## Avaliando Overfitting
 
 ## Interpretação do modelo
 Para explicar quais são as decisões que o modelo toma para chegar às previsões, utilizei os valores SHAP, com a implementação da biblioteca [shap](https://github.com/slundberg/shap). Seguem alguns dos insights percebidos.
