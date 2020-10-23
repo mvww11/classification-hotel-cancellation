@@ -3,6 +3,10 @@ Esse é um projeto completo de data science: obtenção dos dados, tratamento de
 
 Nessa página você encontra um resumo do projeto. A versão completa está separada nos arquivos [missing_data.ipynb](missing_data.ipynb), [EDA.ipynb](EDA.ipynb), [modeling.ipynb](modeling.ipynb), [explainability.ipynb](explainability.ipynb).
 
+Criaremos um modelo que tentará prever se uma reserva de hotel será cancelada com base em cerca de 60 informações disponíveis sobre a reserva, como número de adultos, quantidade de diárias e tempo de estadia.
+
+**Se o hotel souber com antecedência quais são as reservas que têm alta probabilidade de serem canceladas, ele pode tomar medidas de marketing para evitar esse cancelamento (oferecendo alguma vantagem extra, por exemplo). Como cerca de 41% das reservas são canceladas, o projeto tem um grande potencial de retorno para o negócio.**
+
 ## Resumo do Projeto
 * Objetivo: criar um modelo de previsão da probabilidade de uma reserva de hotel ser cancelada.
 * Nosso modelo xgboost final alcançou um recall de 92% em data points nunca vistos por ele.
@@ -50,20 +54,31 @@ Após carregar os dados, precisei fazer uma série de transformações para que 
 * Transformei o Data type de features categóricas de string para número inteiro.
 
 ## Análise Exploratória de Dados e Feature Engineering
-* Após o tratamento de missing data, ficamos com 78879 data points.
+Após o tratamento de missing data, ficamos com 78879 data points. Entre essas reservas, 41% foram canceladas. Isso indica que o cancelamento de reservas tem um impacto muito grande no business. Se conseguirmos diminuir esse percentual, o potencial de geração de lucro para o negócio é enorme.
+
+Abaixo estão ilustrados alguns insights observados na Análise Exploratória, e as Feature Engineering realizadas. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
 * A proporção de cancelamentos era maior em reservas feitas por clientes de Portugal.
 * A proporção de cancelamentos era menor em reservas feitas por clientes da União Europeia que não de Portugal.
-* As duas informações acima me levaram a fazer 2 Feature Engineering: **isPRT**: a reserva foi feita por um cliente de Portugal? **isEU**: a reserva foi feita por um cliente da união Europeia?
+* As duas informações acima me levaram a fazer 2 Feature Engineering: **isPRT**: a reserva foi feita por um cliente de Portugal? **isEU**: a reserva foi feita por um cliente da união Europeia? Confira o gráfico abaixo.
 * 40% das reservas possuíam algum tipo de pedido especial, e tinham uma taxa de cancelamento 2.5x menor que reservas sem nenhum pedido especial.
 * Reservas que possuíam apenas dias de final de semana tinham uma taxa de cancelamento menor
 * A informação acima me levou a criar a seguinte feature: **isOnlyWeekend**: a reserva possui apenas dias de final de semana?
+<img src='isPRT_cancel.png' width="400">
 
-Muitas outras features pareceram ser relevantes para a previsão da probabilidade de cancelamento. A análise completa está no arquivo [EDA.ipynb](EDA.ipynb).
+
 
 ## Data Leakage
+Algumas features de nosso data set foram eliminadas antes do treinamento do modelo, para evitar data leakage. Por exemplo, a coluna 'ReservationStatus' ( que possui 3 valores possíveis: 'cancelled', 'no-show', 'check-out') determina completamente se a reserva foi cancelada ou não. Entretanto, quando o modelo for colocado em produção, ele tentará prever se a reserva será cancelada ANTES de termos a informação sobre o 'ReservationStatus'. Por isso, nosso modelo não pode usar essa informação no treinamento. O mesmo vale para a coluna 'ReservationStatusDate' e para a coluna 'AssignedRoomType' (pois não sabemos que quarto será dado ao hóspede até que ele apareça para fazer o check-in). Logo, essas 3 colunas foram eliminadas da análise.
+
+## Modelagem e split dos dados
+Usaremos um modelo de Gradient Boosting com a implementação da biblioteca xgboost. 
+
+Faremos um split de 60/20/20% dos dados em conjuntos de treinamento, validação e teste, respectivamente. O conjunto de treinamento será aquele em que ajustaremos os parâmetros treináveis de nosso modelo. Como treinaremos vários modelos, que diferem por seus hiperparâmetros, usaremos o conjunto de validação avaliar qual é o melhor entre eles. Já o conjunto de teste será usado uma única vez no final do projeto para estimar a performance que o modelo terá em produção. Desse modo, o conjunto de teste será composto de pontos nunca vistos pelo modelo durante seu treinamento e refinamento.
+
+A métrica que usaremos para avaliar qual é o melhor modelo será a área sob a curva ROC, conhecida como AUC (area under curve). Quanto maior o valor dessa métrica, melhor é o trade-off que teremos entre positivos verdadeiros e positivos falsos (i.e., entre o modelo acertar quais reservas serão canceladas e não errar as reservas não seriam canceladas).
 
 ## Benchmark e Refinamento do modelo
-Treinei dois modelos com hiperparâmetros default: um xgboost e um lightgbm, que apresentaram RMSE similares (~93 no conjunto de validação). A partir desses dois modelos, analisei as feature importances e discuti inconsistências existentes quando mudamos o critério para determinação das feature importances. A solução foi usar a média dos módulos dos valores SHAP para definir que features eram mais importantes. A partir desse resultado, realizei a feature selection. O model final acabou ficando com apenas 5 features.
+Um modelo inicial foi treinado com xgboost, usando os 
 
 ## Refinamento do modelo
 Decidi continuar a modelagem apenas com o lighgbm. Isso porque apresentou um benchmark muito parecido com o xgboost, é treinado mais rapidamente e evitaria [problemas](https://medium.com/@AlexeyButyrev/xgboost-on-aws-lambda-345f1394c2b) no deploy no AWS Lambda.
