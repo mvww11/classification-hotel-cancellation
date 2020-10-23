@@ -93,6 +93,11 @@ Após treinarmos 320 modelos diferentes, o melhor entre eles apresentou um AUC d
 
 O processo completo de refinamento também pode ser visto no arquivo [modeling.ipynb](modeling.ipynb).
 
+## Avaliando Overfitting
+nosso modelo alcançou um f1_score de 96.62% no conjunto de treinamento, contra 85.26% no conjunto de validação. Isso aponta que nosso modelo tem um certo grau de overfitting, uma vez que sua performance é consideravelmente melhor nos pontos em que foi treinado.
+
+Para minimizar o overfitting podemos otimizar certos hiperparâmetros do XGBoosting com que ainda não trabalhamos, como o subsample. Outra estratégia para combater o problema é aumentar o tamanho de nosso conjunto de treinamento. Para isso, uma possibilidade é fazermos k-fold validation, ao invés de usar um conjunto separado para validação.
+
 ## Otimizando para o Recall
 Acredito que o recall tenha uma relevância grande para o projeto. Isso porque o recall mede o percentual de acertos do modelo nas reservas que são canceladas, de fato. E se o hotel sabe de antemão que uma reserva tem alta probabilidade de cancelamento, pode agir para evitar esse cancelamento (oferecendo algum benefício ao cliente, por exemplo). Isso tem um grande potencial de impacto no negócio, uma vez que, como vimos, 41% de todas as reservas são canceladas, em média.
 
@@ -100,11 +105,22 @@ Até agora, para que nosso modelo previsse que uma reserva seria cancelada, era 
 
 Temos um trade-off, no entanto. Ao diminuir esse threshold, estaremos cometendo, com mais frequência, o erro de classificar como canceladas reservas que, de fato, não seriam canceladas. O impacto desse erro para o negócio é que o hotel oferecerá, com maior frequência, algum tipo de vantagem para clientes que não iriam cancelar suas reservas.
 
-Para avaliar o trade-off e escolhermos o melhor threshold, plotaremos abaixo o precision, recall e f1-score em função do threshold.
-
+Para avaliar o trade-off e escolhermos o melhor threshold, plotaremos abaixo o precision, recall e f1-score em função do threshold para o conjunto de validação.
 <img src='threshold.png' width="400">
+Como previsto, à medida que o recall aumenta, a precision diminui. Como estamos dando mais importância ao recall, conforme explicado acima, vou escolher o threshold de 0.25. Em outras palavras, toda vez que nosso modelo calcular que a probabilidade de uma reserva ser cancelada é maior que 25%, nossa previsão será de que aquela reserva será cancelada.
 
-## Avaliando Overfitting
+O threshold de 25% dá, no conjunto de validação, um recall de 92.12% e uma precision de 77.33%.
+
+Isso significa que, em nosso conjunto de validação, sempre que uma reserva vai ser cancelada pelo cliente, nosso modelo consegue prever corretamente em 92.12% dos casos. Em contrapartida, de todas as vezes que nosso modelo diz que uma reserva será cancelada, ele acerta em 77.33% das vezes. Ou seja, em 22.66% das vezes que nosso modelo diz que uma reserva será cancelada, na verdade ela não é.
+
+## Estimando a acurácia do modelo em produção
+Para estimar o desempenho do nosso modelo em produção, vamos utilizar o conjunto de teste. Perceba que essa é a primeira vez que utilizamos o conjunto de teste na modelagem. Isso garante que nenhum parâmetro ou hiperparâmetro foi selecionado para otimizar o modelo para esse conjunto.
+
+Os pontos que temos no conjunto de teste nunca foram vistos pelo modelo, de modo que seu desempenho nesse conjunto é uma medida mais acurada do desempenho que o modelo terá no mundo real, em produção.
+
+O modelo teve um desempenho no conjunto de teste muito próximo daquele observado no conjunto de validação (recall de 92,02% no teste, contra 92,12% na validação). Isso significa que nosso modelo generaliza bem para pontos inéditos, e nos dá maior confiança de usá-lo em produção.
+
+A estimativa final é que nosso consegue prever corretamente 92.02% das reservas que serão canceladas. Como o precision encontrado foi de 77.44%, então em 22.56% das vezes que nosso modelo diz que uma reserva será cancelada, ele erra.
 
 ## Interpretação do modelo
 Para explicar quais são as decisões que o modelo toma para chegar às previsões, utilizei os valores SHAP, com a implementação da biblioteca [shap](https://github.com/slundberg/shap). Seguem alguns dos insights percebidos.
