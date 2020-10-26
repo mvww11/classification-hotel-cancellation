@@ -128,7 +128,7 @@ Para explicar quais são as decisões que o modelo toma para chegar às previsõ
 #### Importância de cada feature na previsão
 No gráfico abaixo são mostradas a importância que cada feature tem para a previsão que nosso modelo faz. Podemos ver que o fato da reserva ter sido feita sem depósito é a feature mais importante para nosso modelo chegar à previsão. Em seguida vem a feature que diz se o cliente é de Portugal. A terceira feature mais importante é a agência que vendeu a reserva. Por fim, temos o número total de pedidos especiais feitos na reserva, e o LeadTime (tempo entre o registro da reserva e a data da estadia).
 
-<img src='feature_importances.png' width="400">
+<img src='feature_importances.png' width="500">
 
 Apesar das 5 features indicadas acima serem as mais importantes, vemos no gráfico abaixo que as outras features também influenciam de forma significativa o valor de SHAP de uma reserva e, consequentemente, a probabilidade de cancelamento calculada por nosso modelo.
 
@@ -149,17 +149,3 @@ Listamos abaixo alguns dos insights obtidos nessa etapa do projeto, incluindo a 
 * Se um cliente não requisitou vaga de estacionamento, a previsão do modelo quase não sofre alteração. Mas no caso da vaga de estacionamento ter sido requisitada, a probabilidade de cancelamento cai drasticamente.
 
 ## Colocando o modelo em produção
-Optamos por fazer um deploy serverless do modelo no AWS Lambda. Isso porque os requests ao API end-point seriam esporádicos, de modo que não precisamos de uma máquina continuamente dedicada para processá-los.
-
-Utilizamos o serverless framework para colocar o modelo em produção. Assim, a partir de uma url (API end-point), podemos enviar um request contendo os inputs das features (renda, número de residentes, sexo e max_escol) e receber de volta o valor de previsão da nota do candidato.
-
-Por exemplo, a seguinte URL receberá (na variável 'predictedGrade') a previsão de 510.06 pontos na nota do ENEM para um candidato de features dadas por {'Q005': 1, 'Q006': 3, 'TP_SEXO':1, 'max_escol': 4, 'perCapita': 6}:
-https://ojlzl0q4wg.execute-api.sa-east-1.amazonaws.com/dev/get-grade?Q005=1&Q006=3&TP_SEXO=1&max_escol=4&perCapita=6
-
-Criei também uma interface por meio de um bot no Telegram para que qualquer pessoa pudesse fazer a previsão da sua nota usando o modelo desenvolvido aqui. Esse bot utiliza a URL acima para fazer os requests das previsões, passando os dados digitados pelo usuário. Abaixo estão mostrados print screens do bot em funcionamento.
-
-<img src="imgs/bot1.jpeg" width="250">
-<img src="imgs/bot2.jpeg" width="250">
-<img src="imgs/bot6.jpeg" width="250">
-<img src="imgs/bot3.jpeg" width="250"> 
-<img src="imgs/bot4.jpeg" width="250">
