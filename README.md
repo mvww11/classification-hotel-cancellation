@@ -106,7 +106,7 @@ Até agora, para que nosso modelo previsse que uma reserva seria cancelada, era 
 Temos um trade-off, no entanto. Ao diminuir esse threshold, estaremos cometendo, com mais frequência, o erro de classificar como canceladas reservas que, de fato, não seriam canceladas. O impacto desse erro para o negócio é que o hotel oferecerá, com maior frequência, algum tipo de vantagem para clientes que não iriam cancelar suas reservas.
 
 Para avaliar o trade-off e escolhermos o melhor threshold, plotaremos abaixo o precision, recall e f1-score em função do threshold para o conjunto de validação.
-<img src='threshold.png' width="400">
+<img src='threshold2.png' width="400">
 Como previsto, à medida que o recall aumenta, a precision diminui. Como estamos dando mais importância ao recall, conforme explicado acima, vou escolher o threshold de 0.25. Em outras palavras, toda vez que nosso modelo calcular que a probabilidade de uma reserva ser cancelada é maior que 25%, nossa previsão será de que aquela reserva será cancelada.
 
 O threshold de 25% dá, no conjunto de validação, um recall de 92.12% e uma precision de 77.33%.
