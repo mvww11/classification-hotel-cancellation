@@ -132,19 +132,21 @@ No gráfico abaixo são mostradas a importância que cada feature tem para a pre
 
 Apesar das 5 features indicadas acima serem as mais importantes, vemos no gráfico abaixo que as outras features também influenciam de forma significativa o valor de SHAP de uma reserva e, consequentemente, a probabilidade de cancelamento calculada por nosso modelo.
 
-#### Impacto das features na previsão do modelo
+#### Explicando as decisões do modelo
 O gráfico abaixo dá uma visão geral das decisões que nosso modelo faz para chegar à previsão de um usuário. Cada linha representa uma feature diferente e deve ser lida separadamente.
 
 <img src='summary_plot.png'>
 
 
-#### Outros insights
-Abaixo estão alguns dos insights na análise de explicabilidade pelo shap. A análise completa (e os respectivos gráficos) pode ser vista no arquivo [explainability.ipynb](explainability.ipynb).
+Listamos abaixo alguns dos insights obtidos nessa etapa do projeto, incluindo a análise do gráfico acima. A análise completa (e os respectivos gráficos) pode ser vista no arquivo [explainability.ipynb](explainability.ipynb).
 
-* Quando há um depósito com a reserva, nosso modelo diminui sutilmente a probabilidade de cancelamento. Em contrapartida, quando não houve depósito, a probabilidade de cancelamento aumenta drasticamente.
+* Quando há um depósito com a reserva, nosso modelo diminui sutilmente a probabilidade de cancelamento. Em contrapartida, quando não houve depósito, a probabilidade de cancelamento aumenta drasticamente. Essa informação pode ser usada pelo hotel no seu business para evitar cancelamentos. Seria interessante estudar, por exemplo, se valeria a pena oferecer um desconto na diária do hotel, ou alguma outra vantagem, para reservas feitas com depósito.
 * Quando o cliente é português, a probabilidade de cancelamento da reserva tende a aumentar. Mas existem algumas Agências que neutralizam a influência de o cliente ser português sobre a previsão do modelo.
+* Existem agências que estão associadas a uma maior probabilidade de cancelamento.
 * Reservas que não possuem pedidos especiais tendem a ter maior probabilidade de cancelamento. Quando há um ou dois pedidos especiais, essa probabilidade diminui. Quando temos três, quatro ou cinco pedidos especiais, diminui ainda mais. Esse efeito é reforçado caso o cliente seja do segmento de mercado Online TA.
 * Quando temos um lead time de pouquíssimos dias, entre 0 e 5, a probabilidade de cancelamento é drasticamente diminuída. Para lead times maiores, entre 15 e 100 dias, o modelo não altera de forma consistente a previsão de probabilidade. A partir de 100 dias, um aumento no lead time tende a aumentar a previsão da probabilidade de cancelamento. Esse efeito é intensificado caso o cliente seja do segmento de mercado Online TA.
+* Quando um cliente nunca cancelou uma reserva antes, isso quase não afeta a probabilidade prevista pelo modelo. Mas caso ele já o tenha feito, a probabilidade de cancelamento da reserva aumenta muito.
+* Se um cliente não requisitou vaga de estacionamento, a previsão do modelo quase não sofre alteração. Mas no caso da vaga de estacionamento ter sido requisitada, a probabilidade de cancelamento cai drasticamente.
 
 ## Colocando o modelo em produção
 Optamos por fazer um deploy serverless do modelo no AWS Lambda. Isso porque os requests ao API end-point seriam esporádicos, de modo que não precisamos de uma máquina continuamente dedicada para processá-los.
