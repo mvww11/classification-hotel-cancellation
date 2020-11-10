@@ -16,7 +16,6 @@ Criaremos um modelo que tentará prever se uma reserva de hotel será cancelada 
 * Benchmark model com XGBoost e LightGBM para análise de importâncias relativas entre features e feature selection.
 * Refinamento do modelo: procura por hiperparâmetros ótimos usando bayesian search.
 * Interpretação do modelo: expliquei quais são as decisões que o modelo faz para chegar a uma previsão. Para isso, usei valores SHAP.
-* Deploy serverless do modelo no [AWS Lambda](https://aws.amazon.com/lambda/) e criação de um [bot do Telegram](https://telegram.org/blog/bot-revolution) que permite que qualquer pessoa faça a previsão da sua nota no ENEM usando nosso modelo.
 
 ## Recursos utilizados
 **Python**: Versão 3.7<br>
